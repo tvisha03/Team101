@@ -1,0 +1,103 @@
+import pandas as pd
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+data = pd.read_csv("C:\\Users\mahik\OneDrive\Desktop\datasetemail\emails.csv")
+
+data.describe()
+
+data.info()
+
+data.isnull().sum()
+
+
+data['Email_No'] = data.iloc[:, 0].str.extract('(\d+)')
+
+data.drop(data.columns[0], axis=1, inplace=True)
+
+
+plt.scatter(data['x'], data['y'], color='skyblue')
+plt.title('Scatter Plot of X vs Y')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+
+
+plt.bar(data['category'], data['count'], color='skyblue')
+plt.title('Bar Plot of Category Counts')
+plt.xlabel('Category')
+plt.ylabel('Count')
+plt.xticks(rotation=45) 
+plt.show()
+
+
+plt.hist(data['feature'], bins=30, color='skyblue', edgecolor='black')
+plt.title('Histogram of Feature')
+plt.xlabel('Feature Value')
+plt.ylabel('Frequency')
+plt.show()
+
+
+X = data.drop('Prediction', axis=1) 
+y = data['Prediction']
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+
+
+y_pred = model.predict(X_test)
+
+
+
+print("Predicted output:")
+print(y_pred)
+
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy:", accuracy)
+
+
+print("Classification Report:")
+print(classification_report(y_test, y_pred))
+
+
+
+conf_matrix = confusion_matrix(y_test, y_pred)
+
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.show()
+
+
+from sklearn.metrics import precision_recall_curve
+
+# Compute precision-recall curve
+precision, recall, _ = precision_recall_curve(y_test, y_pred)
+
+# Plot precision-recall curve
+plt.figure()
+plt.step(recall, precision, color='b', alpha=0.2, where='post')
+plt.fill_between(recall, precision, step='post', alpha=0.2, color='b')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.ylim([0.0, 1.05])
+plt.xlim([0.0, 1.0])
+plt.title('Precision-Recall Curve')
+plt.show()
+
+
+
+

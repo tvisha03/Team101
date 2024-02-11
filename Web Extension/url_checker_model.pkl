@@ -1,0 +1,98 @@
+import re
+import string
+import logging
+
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from urllib.parse import urlparse
+from sklearn.model_selection import train_test_split, cross_val_score, cross_val_predict
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, classification_report, confusion_matrix
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, ExtraTreesClassifier, GradientBoostingClassifier, BaggingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import SGDClassifier, LogisticRegression, RidgeClassifier, Perceptron
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.mixture import GaussianMixture
+from sklearn.cluster import KMeans
+from sklearn.pipeline import Pipeline
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
+from tldextract import extract as tld_extract
+from tld import get_tld, is_tld
+from tld.exceptions import TldDomainNotFound, TldBadUrl, TldIOError
+
+from colorama import Fore
+from datetime import datetime
+from plotly.subplots import make_subplots
+from plotly import graph_objects as go
+from wordcloud import WordCloud
+from gensim.models import Word2Vec
+import tldextract
+import hashlib
+import whois
+import warnings
+
+warnings.filterwarnings("ignore")
+
+urls_data = pd.read_csv('/content/malicious_phish.csv')
+urls_data.head()
+urls_data.info()
+urls_data.isnull().sum()
+count = urls_data['type'].value_counts()
+colors = [
+    '#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
+    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D'
+]
+fig = go.Figure(data=[go.Bar(x=count.index, y=count, marker=dict(color=colors))])
+fig.update_layout(
+    xaxis_title='Types',
+    yaxis_title='Count',
+    title='Count of Different Types of URLs',
+    plot_bgcolor='black',
+    paper_bgcolor='black',
+    font=dict(color='white')
+)
+fig.update_xaxes(tickfont=dict(color='white'))
+fig.update_yaxes(tickfont=dict(color='white'))
+fig.show()
+urls_data['url'] = urls_data['url'].replace('www.', '', regex=True)
+urls_data.head()
+urls_data["type"].value_counts()
+urls_data["url_type"] = urls_data["type"].replace({
+    'benign':0,
+    'defacement':1,
+    'phishing':2,
+    'malware':3
+});
+urls_data.head()
+def get_url_length(url):
+    # Remove common prefixes
+    prefixes = ['http://', 'https://']
+    for prefix in prefixes:
+        if url.startswith(prefix):
+            url = url[len(prefix):]
+
+    # Remove 'www.' if present
+    url = url.replace('www.', '')
+
+    # Return the length of the remaining URL
+    return len(url)
+urls_data['url_len'] = urls_data['url'].apply(lambda x: get_url_length(str(x)))
+urls_data.head()
+def extract_pri_domain(url):
+    try:
+        res = get_tld(url, as_object = True, fail_silently=False,fix_protocol=True)
+        pri_domain= res.parsed_url.netloc
+    except :
+        pri_domain= None
+    return pri_domain
+urls_data['pri_domain'] = urls_data['url'].apply(lambda x: extract_pri_domain(x))
+urls_data.head()

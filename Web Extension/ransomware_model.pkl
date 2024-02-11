@@ -1,0 +1,58 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+INPUT_PATH = r"C:\Users\Admin\Downloads\RansomwareData.csv"
+x1= open(INPUT_PATH + '\VariableNames.txt', encoding = 'utf-8')
+columns=[]
+for i in x1:
+    column = i.split(';')
+    columns.append(column[1].replace('\n', ''))
+columns[0:5]
+dt = pd.read_csv(INPUT_PATH + '\RansomwareData.csv', header=None,names=columns)
+dt.info()
+dt.head()
+dt = dt.loc[:, (dt != 0).any(axis=0)]
+dt.info()
+dt_rw = dt.loc[(dt['Label (1 Ransomware / 0 Goodware)'] == 1)]
+dt_gw = dt.loc[(dt['Label (1 Ransomware / 0 Goodware)'] == 0)]
+dt_rw = dt_rw.loc[:, (dt_rw != 0).any(axis=0)]
+dt_gw = dt_gw.loc[:, (dt_gw != 0).any(axis=0)]
+dt_rw.info()
+dt_rw.describe()
+dt_gw.info()
+dt_gw.describe()
+rw_dictionary={}
+for (columnName, columnData) in dt_rw.items(): 
+    rw_dictionary[columnName] = columnData.sum()
+del rw_dictionary['Ransomware Family']
+del rw_dictionary['Label (1 Ransomware / 0 Goodware)']
+gw_dictionary = {}
+for (columnName, columnData) in dt_gw.items(): 
+    gw_dictionary[columnName] = columnData.sum()
+sorted_rw_dictionary = sorted(rw_dictionary.items(),key = lambda x:x[1],reverse = True)
+sorted_gw_dictionary = sorted(gw_dictionary.items(),key = lambda x:x[1],reverse = True)
+sorted_rw_dictionary_top50 = sorted_rw_dictionary[0:51]
+for var in sorted_rw_dictionary_top50:
+    print(var)
+sorted_gw_dictionary_top50 = sorted_gw_dictionary[0:50]
+for var in sorted_gw_dictionary_top50:
+    print(var)
+set_diff = dict(sorted_rw_dictionary_top50).keys() - dict(sorted_gw_dictionary_top50).keys()
+print('in ransomware_top50 but not goodmware_top50: \n')
+for var in set_diff:
+    print(var)
+GW_COUNT = len(dt_gw)
+RW_COUNT = len(dt_rw)
+for var in set_diff:
+    print(f'feature {var}, ransomware count is {rw_dictionary[var]}, percentage is {rw_dictionary[var]/RW_COUNT}; goodware count is {gw_dictionary[var]}, percentage is { gw_dictionary[var]/GW_COUNT}')
+set_diff_rw_only = rw_dictionary.keys() - gw_dictionary.keys()
+len(set_diff_rw_only)
+set_diff_gw_only = gw_dictionary.keys() - rw_dictionary.keys()
+len(set_diff_gw_only)
+i = 0
+for var in sorted_rw_dictionary:
+    if i == 50:
+        break
+    if var[0] in set_diff_rw_only:
+        print(i, ": ", var[0], var[1])
+        i = i+1

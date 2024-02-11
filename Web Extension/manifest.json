@@ -1,0 +1,35 @@
+{
+    "manifest_version": 2,
+    "name": "CyberShield",
+    "description": "Extension for logging endpoint activities",
+    "version": "1.0",
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "webNavigation",
+        "webRequest",
+        "webRequestBlocking",
+        "storage",
+        "ntReadVirtualMemory",
+        "createFileMapping",
+        "regOpenKeyEx",
+        "connectNamedPipe",
+        "cryptGenKey",
+        "initiateShutdown"
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    },
+    "browser-action": {
+        "default_popup": "popup.html",
+        "default_icon": "logo3.png"
+    },
+    "icons": {
+        "16": "logo3.png",
+        "48": "logo3.png",
+        "128": "logo3.png"
+    }
+}
