@@ -1,0 +1,4 @@
+The code analyzes a dataset of URLs to classify them as malicious or benign. 
+It reads the data, explores its structure, and preprocesses URLs by removing prefixes and extracting features like length and primary domain. 
+It visualizes URL types and maps them to numerical labels. Functions are defined to extract URL features. 
+The goal is to prepare the dataset for machine learning classification, likely using algorithms such as decision trees or random forests to detect malicious URLs based on their characteristics.
