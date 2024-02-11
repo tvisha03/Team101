@@ -1,0 +1,4 @@
+This Python code uses Tkinter to create a user-friendly window for collecting password requirements.
+It includes input fields for minimum and maximum password length, and checkboxes for selecting uppercase, lowercase, digits, and special characters. 
+When users click "Generate Password," it constructs a dictionary with their choices and calls a function to create a password. 
+The generated password is then displayed in the window. Overall, it offers a simple and intuitive interface for customizing and generating passwords.
