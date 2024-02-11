@@ -1,0 +1,4 @@
+This code processes a dataset containing ransomware and goodware data. 
+It reads the data, identifies key features, and compares their importance between ransomware and goodware. 
+By analyzing differences in feature occurrence rates, it highlights characteristics unique to ransomware. 
+This helps discern factors that distinguish ransomware from goodware within the dataset.
